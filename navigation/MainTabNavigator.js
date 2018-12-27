@@ -6,6 +6,31 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import NoNavBarContainer from '../screens/NoNavBarContainer';
+
+
+{/* 
+  This component creates the logged in view.  Currently it is being used
+  to test additions such as the login screen in this case
+*/} 
+
+const LoginStack = createStackNavigator({
+  Login: NoNavBarContainer,
+});
+
+LoginStack.navigationOptions = {
+  tabBarLabel: 'Login',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-information-circle${focused ? '' : '-outline'}`
+          : 'md-information-circle'
+      }
+    />
+  ),
+};
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -55,6 +80,7 @@ SettingsStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   HomeStack,
+  LoginStack,
   LinksStack,
   SettingsStack,
 });
