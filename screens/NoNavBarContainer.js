@@ -23,12 +23,16 @@ export default class NoNavBarContainer extends React.Component {
       this.returnToLogin = this.returnToLogin.bind(this);
   }
 
+  // This method allows child components to switch the parent state from
+  // the LoginComponent to the RegistrationComponent
   register() {
     this.setState({
       currentForm: 'registration'
     })
   }
 
+  // This method allows child components to switch the parent state from
+  // the RegistrationComponent to the LoginComponent
   returnToLogin() {
     this.setState({
       currentForm: 'login'
