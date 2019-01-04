@@ -12,10 +12,15 @@ import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
 
+import * as firebase from 'firebase';
+
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
+  signOut = () => {
+    firebase.auth().signOut();
+  }
 
   render() {
     return (
@@ -41,8 +46,8 @@ export default class HomeScreen extends React.Component {
               <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
             </View>
 
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
+            <Text style={styles.getStartedText} onPress={this.signOut}>
+              I love you.
             </Text>
           </View>
 

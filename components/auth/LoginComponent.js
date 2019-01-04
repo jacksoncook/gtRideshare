@@ -8,20 +8,23 @@ import {
   TextInput,
   View,
 } from 'react-native';
-
-
+import * as firebase from 'firebase';
 {/* 
-  This component contains the login form as well as state updates
-  for user inputted user email and password
+  This component contains the login form
 */} 
 
 export default class LoginComponent extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
+  
   constructor(props) {
       super(props);
       this.state = {userEmail: '', password: ''};
+  }
+
+  onLoginPress = () => {
+    firebase.auth().signInWithEmailAndPassword(this.state.userEmail, this.state.password)
+    .then(() => { }, (error) => {
+      Alert.alert(error.message);
+    });
   }
 
   render() {
@@ -33,7 +36,7 @@ export default class LoginComponent extends React.Component {
         }}>
           <Image
             source={
-              require('../assets/images/gtRideshareLogo.png')
+              require('../../assets/images/gtRideshareLogo.png')
             }
             style ={{
               flex: 5,
@@ -44,7 +47,7 @@ export default class LoginComponent extends React.Component {
               <TextInput
                 style={styles.textInputs}
                 placeholder="Email (...@gatech.edu)"
-                onChangeText={(userEmail) => this.setState({userEmail})}
+                onChangeText={(text) => this.setState({userEmail: text})}
               />
           </View>
           <View style={styles.loginInputs}>
@@ -52,7 +55,7 @@ export default class LoginComponent extends React.Component {
                 style={styles.textInputs}
                 secureTextEntry={true}
                 placeholder="Password"
-                onChangeText={(password) => this.setState({password})}
+                onChangeText={(text) => this.setState({password: text})}
               />
           </View>
           <View style = {{
@@ -63,7 +66,7 @@ export default class LoginComponent extends React.Component {
             alignItems: 'center'}}>
               <Button
                 onPress={() => {
-                    Alert.alert('You tapped the button!');
+                    this.onLoginPress;
                 }}
                 style={{flex: 1,}}
                 color='#F5D580'
@@ -91,29 +94,17 @@ export default class LoginComponent extends React.Component {
 
 }
 const styles = StyleSheet.create({
-    loginInputs: {
-      paddingRight: 20,
-      paddingLeft: 20,
-      flex: 1,
-      paddingVertical: 5,
-    },
+  loginInputs: {
+    paddingRight: 20,
+    paddingLeft: 20,
+    flex: 1,
+    paddingVertical: 5,
+  },
 
-    textInputs: {
-      backgroundColor: 'white',
-      borderColor: '#C4C4C4',
-      borderWidth: .5,
-      borderRadius: 4,
-    },
-
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-    developmentModeText: {
-      marginBottom: 20,
-      color: 'rgba(0,0,0,0.4)',
-      fontSize: 14,
-      lineHeight: 19,
-      textAlign: 'center',
-},
+  textInputs: {
+    backgroundColor: 'white',
+    borderColor: '#C4C4C4',
+    borderWidth: .5,
+    borderRadius: 4,
+  },
 });

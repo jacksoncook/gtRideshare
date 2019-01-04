@@ -1,18 +1,17 @@
 import React from 'react';
 import {
-  Text,
   View,
 } from 'react-native';
 
-import LoginComponent from './LoginComponent'
+import LoginComponent from '../components/auth/LoginComponent'
 
-import RegistrationComponent from './RegistrationComponent'
+import RegistrationComponent from '../components/auth/RegistrationComponent'
 
 {/* 
   This component is going to contain both login and registration
   components
 */} 
-export default class NoNavBarContainer extends React.Component {
+export default class NotAuthenticated extends React.Component {
   static navigationOptions = {
     header: null,
   };

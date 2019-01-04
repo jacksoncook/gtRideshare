@@ -1,18 +1,35 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
+import * as firebase from 'firebase';
 import AppNavigator from './navigation/AppNavigator';
-import NoNavBarContainer from './screens/NoNavBarContainer';
+import NotAuthenticated from './screens/NotAuthenticated';
+import ApiKeys from './constants/ApiKeys.js';
 
 export default class App extends React.Component {
-  state = {
-    isLoadingComplete: false,
-    loggedIn: false,
-  };
+
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoadingComplete: false,
+      authenticated: false,
+      authenticationReady: false,
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(ApiKeys.FirebaseConfig);
+    }
+    firebase.auth().onAuthStateChanged(this.onAuthStateChanged)
+  }
+
+  onAuthStateChanged = (user) => {
+    this.setState({authenticationReady: true});
+    this.setState({authenticated: !!user});
+  }
 
   render() {
-    if (!this.state.loggedIn) {
-      return <NoNavBarContainer />;
+    if (!this.state.authenticated) {
+      return <NotAuthenticated />;
     }
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
@@ -65,3 +82,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+

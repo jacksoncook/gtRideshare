@@ -2,22 +2,18 @@ import React from 'react';
 import {
   Alert,
   Button,
-  Image,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
-
-
+import * as firebase from 'firebase';
 {/* 
   This component contains the Registration form
 */} 
 
 export default class RegistrationComponent extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
+    
   constructor(props) {
       super(props);
       this.state = {
@@ -26,6 +22,19 @@ export default class RegistrationComponent extends React.Component {
         userEmail: '',
         password: '',
         confirmedPassword: ''};
+  }
+
+  onRegisterPress = () => {
+      console.warn(this.state.userEmail);
+      if (this.state.password === this.state.confirmedPassword) {
+        firebase.auth().createUserWithEmailAndPassword(this.state.userEmail.trim(), this.state.password)
+          .then(() => { Alert.alert("it worked")}, (error) => {
+              Alert.alert(error.message);
+          });
+      } else {
+          Alert.alert("Passwords do not match");
+          return;
+      }
   }
 
   render() {
@@ -39,21 +48,21 @@ export default class RegistrationComponent extends React.Component {
                 <TextInput
                     style={styles.textInputs}
                     placeholder="First Name"
-                    onChangeText={(firstName) => this.setState({firstName})}
+                    onChangeText={(text) => this.setState({firstName: text})}
                 />
             </View>
             <View style={styles.registrationInputs}>
                 <TextInput
                     style={styles.textInputs}
                     placeholder="LastName"
-                    onChangeText={(lastName) => this.setState({lastName})}
+                    onChangeText={(text) => this.setState({lastName: text})}
                 />
             </View>
             <View style={styles.registrationInputs}>
                 <TextInput
                     style={styles.textInputs}
                     placeholder="GT Email (...@gatech.edu)"
-                    onChangeText={(userEmail) => this.setState({userEmail})}
+                    onChangeText={(text) => this.setState({userEmail: text})}
                 />
             </View>
             <View style={styles.registrationInputs}>
@@ -61,7 +70,7 @@ export default class RegistrationComponent extends React.Component {
                     style={styles.textInputs}
                     secureTextEntry={true}
                     placeholder="Password"
-                    onChangeText={(password) => this.setState({password})}
+                    onChangeText={(text) => this.setState({password: text})}
                 />
             </View>
             <View style={styles.registrationInputs}>
@@ -69,7 +78,7 @@ export default class RegistrationComponent extends React.Component {
                     style={styles.textInputs}
                     secureTextEntry={true}
                     placeholder="Confirm Password"
-                    onChangeText={(confirmedPassword) => this.setState({confirmedPassword})}
+                    onChangeText={(text) => this.setState({confirmedPassword: text})}
                 />
             </View>
             <View style = {{
@@ -79,9 +88,7 @@ export default class RegistrationComponent extends React.Component {
               justifyContent: 'center',
               alignItems: 'center'}}>
               <Button
-                onPress={() => {
-                  Alert.alert('You tapped the button!');
-                }}
+                onPress={this.onRegisterPress}
                 color='#F5D580'
                 style={{paddingRight: 80, paddingLeft: 80, flex: 1}}
                 title="Register"
@@ -95,9 +102,7 @@ export default class RegistrationComponent extends React.Component {
               alignItems: 'center'}}>
                 <Text>Already have an account?</Text>
                 <Button
-                  onPress={() => {
-                    this.props.returnToLogin();
-                  }}
+                  onPress={this.props.returnToLogin}
                   color='#004F9F'
                   title="Return to Login"
                 />
