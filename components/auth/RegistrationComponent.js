@@ -8,9 +8,10 @@ import {
   View,
 } from 'react-native';
 import * as firebase from 'firebase';
+const FIREBASE_ATTRIBUTES = require('../../constants/FirebaseAttributes');
 {/* 
   This component contains the Registration form
-*/} 
+*/}
 
 export default class RegistrationComponent extends React.Component {
     
@@ -21,14 +22,23 @@ export default class RegistrationComponent extends React.Component {
         lastName: '',
         userEmail: '',
         password: '',
-        confirmedPassword: ''};
+        confirmedPassword: '',
+    };
   }
-
+  
   onRegisterPress = () => {
-      console.warn(this.state.userEmail);
       if (this.state.password === this.state.confirmedPassword) {
         firebase.auth().createUserWithEmailAndPassword(this.state.userEmail.trim(), this.state.password)
-          .then(() => { Alert.alert("it worked")}, (error) => {
+          .then(() => { 
+              firebase.database().ref(FIREBASE_ATTRIBUTES.USERS + '/' + firebase.auth().currentUser.uid).set({
+                  firstName: this.state.firstName,
+                  lastName: this.state.lastName,
+                  email: this.state.userEmail,
+                  phoneNumber: 'XXX-XXX-XXXX',
+                  rides: 0,
+                  posts: 0,
+              });
+          }, (error) => {
               Alert.alert(error.message);
           });
       } else {
