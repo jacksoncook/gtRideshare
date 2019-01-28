@@ -6,7 +6,8 @@ import AppNavigator from './navigation/AppNavigator';
 import NotAuthenticated from './screens/NotAuthenticated';
 import ApiKeys from './constants/ApiKeys.js';
 import { Provider } from 'react-redux';
-// import { store } from './redux/app-redux';
+import { store } from './redux/app-redux';
+import { setUser } from './redux/app-redux';
 
 export default class App extends React.Component {
 
@@ -43,18 +44,22 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        // <Provider store={store}>
+        <Provider store={store}>
           <View style={styles.container}>
             {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
             <AppNavigator />
           </View>
-        // </Provider>
+        </Provider>
       );
     }
   }
 
   _loadResourcesAsync = async () => {
     return Promise.all([
+      // firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
+      //   var retrievedUser = snapshot.val();
+      //   store.dispatch(setUser(retrievedUser));
+      // }),
       Asset.loadAsync([
         require('./assets/images/robot-dev.png'),
         require('./assets/images/robot-prod.png'),

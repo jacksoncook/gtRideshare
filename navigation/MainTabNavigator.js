@@ -3,22 +3,26 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
+import PostBoard from '../components/base/PostBoard';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 
-{/* 
+{ /*
   This component creates the logged in view.  Currently it is being used
   to test additions such as the login screen in this case
-*/} 
+*/ }
 
-const HomeStack = createStackNavigator({
-  Home: HomeScreen,
+// const HomeStack = createStackNavigator({
+//   Home: HomeScreen,
+// });
+
+const PostStack = createStackNavigator({
+  Posts: PostBoard,
 });
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+PostStack.navigationOptions = {
+  tabBarLabel: 'Posts',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -30,6 +34,20 @@ HomeStack.navigationOptions = {
     />
   ),
 };
+
+// HomeStack.navigationOptions = {
+//   tabBarLabel: 'Home',
+//   tabBarIcon: ({ focused }) => (
+//     <TabBarIcon
+//       focused={focused}
+//       name={
+//         Platform.OS === 'ios'
+//           ? `ios-information-circle${focused ? '' : '-outline'}`
+//           : 'md-information-circle'
+//       }
+//     />
+//   ),
+// };
 
 const LinksStack = createStackNavigator({
   Links: LinksScreen,
@@ -60,7 +78,7 @@ SettingsStack.navigationOptions = {
 };
 
 export default createBottomTabNavigator({
-  HomeStack,
+  PostStack,
   LinksStack,
   SettingsStack,
 });
