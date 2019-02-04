@@ -5,6 +5,7 @@ import {
   Alert,
   Button,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -16,13 +17,7 @@ const FIREBASE_ATTRIBUTES = require('../../constants/FirebaseAttributes');
 
 const mapStateToProps = state => ({
   user: state.user,
-  posts: state.posts,
 });
-
-// const mapDispatchToProps = state => ({
-//   user: state.user,
-//   posts: state.posts,
-// });
 
 // This component contains the create post form
 
@@ -55,7 +50,6 @@ class CreatePost extends React.Component {
     super(props);
     this.state = {
       user: this.props.user,
-      posts: this.props.posts,
       postDescription: '',
       postStartingLocation: '',
       postDestination: '',
@@ -65,12 +59,12 @@ class CreatePost extends React.Component {
       postDriver: false,
     };
     this.onPostPress = this.onPostPress.bind(this);
+    this.onToggleDriver = this.onToggleDriver.bind(this);
   }
 
   onPostPress() {
     const {
       user,
-      posts,
       postDescription,
       postStartingLocation,
       postDestination,
@@ -102,11 +96,17 @@ class CreatePost extends React.Component {
           if (secondError) {
             Alert.alert(error.message);
           } else {
+            par.returnToPosts();
           }
         });
-        par.returnToPosts();
       }
     });
+  }
+
+  onToggleDriver() {
+    this.setState(prevState => ({
+      postDriver: !prevState.postDriver,
+    }));
   }
 
   render() {
@@ -119,7 +119,11 @@ class CreatePost extends React.Component {
       >
         <View style={styles.largeInput}>
           <TextInput
-            style={styles.textInputs}
+            style={{
+              backgroundColor: 'white',
+              borderColor: '#C4C4C4',
+              paddingTop: 50,
+            }}
             placeholder="Description"
             onChangeText={text => this.setState({ postDescription: text })}
           />
@@ -167,27 +171,38 @@ class CreatePost extends React.Component {
           alignItems: 'center',
         }}
         >
-          <Button
-            onPress={this.onPostPress}
-            style={{ flex: 1 }}
-            color="#F5D580"
-            title="Post"
-          />
+          <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            paddingVertical: 20,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          >
+            <Text>Driver?</Text>
+            <Switch
+              value={this.state.postDriver}
+              onValueChange={this.onToggleDriver}
+              color="#004F9F"
+            />
+          </View>
         </View>
+        <Button
+          onPress={this.onPostPress}
+          style={{ flex: 1, flexDirection: 'row' }}
+          color="#F5D580"
+          title="Post"
+        />
         <View style={{
           flex: 1,
           flexDirection: 'row',
           paddingVertical: 20,
-          justifyContent: 'flex-end',
+          justifyContent: 'center',
           alignItems: 'center',
         }}
         >
-          <Text>New user?</Text>
-          <Button
-            onPress={this.onPostPress}
-            color="#004F9F"
-            title="Register"
-          />
+          <Text onPress={this.props.returnToPosts}>Cancel Post Creation</Text>
+
         </View>
       </View>
     );
