@@ -41,10 +41,23 @@ const setUser = user => ({
   value: user,
 });
 
+const setPosts = posts => ({
+  type: 'setPosts',
+  value: posts,
+});
+
 const watchUserData = uid => function (dispatch) {
   firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${uid}`).on('value', (snapshot) => {
     const userData = snapshot.val();
     dispatch(setUser(userData));
+  }, (error) => {
+  });
+};
+
+const watchPosts = () => function (dispatch) {
+  firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}`).on('value', (snapshot) => {
+    const posts = snapshot.val();
+    dispatch(setPosts(posts));
   }, (error) => {
   });
 };
@@ -54,5 +67,5 @@ const watchUserData = uid => function (dispatch) {
 
 const store = createStore(reducer, applyMiddleware(thunkMiddleware));
 export {
-  store, editUser, createPost, setUser, watchUserData,
+  store, editUser, createPost, setUser, watchUserData, watchPosts,
 };
