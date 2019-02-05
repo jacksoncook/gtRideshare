@@ -38,6 +38,7 @@ export default class LoginComponent extends React.Component {
     this.onLoginPress = this.onLoginPress.bind(this);
   }
 
+  // Contacts firebase for login authentification
   onLoginPress() {
     const { userEmail, password } = this.state;
     firebase.auth().signInWithEmailAndPassword(userEmail.trim(), password)

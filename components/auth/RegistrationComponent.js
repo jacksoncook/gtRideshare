@@ -55,6 +55,8 @@ export default class RegistrationComponent extends React.Component {
     this.onRegisterPress = this.onRegisterPress.bind(this);
   }
 
+  // Both registers the user with Firebase authentification and
+  // stores user data in Firebase Database
   onRegisterPress() {
     const {
       userFirstName,
