@@ -6,8 +6,11 @@ import AppNavigator from './navigation/AppNavigator';
 import NotAuthenticated from './screens/NotAuthenticated';
 import ApiKeys from './constants/ApiKeys.js';
 import { Provider } from 'react-redux';
-import { store } from './redux/app-redux';
-import { setUser } from './redux/app-redux';
+import { store, setUser, setPosts } from './redux/app-redux';
+
+const FIREBASE_ATTRIBUTES = require('./constants/FirebaseAttributes');
+
+// Main app that is run by expo when expo start is ran
 
 export default class App extends React.Component {
 
@@ -18,23 +21,70 @@ export default class App extends React.Component {
       isLoadingComplete: false,
       authenticated: false,
       authenticationReady: false,
+      dataLoaded: 0,
     };
     if (!firebase.apps.length) {
       firebase.initializeApp(ApiKeys.FirebaseConfig);
     }
+    this.getUser = this.getUser.bind(this);
+    this.getPosts = this.getPosts.bind(this);
+    this.onAuthStateChanged = this.onAuthStateChanged.bind(this);
     firebase.auth().onAuthStateChanged(this.onAuthStateChanged)
   }
 
-  onAuthStateChanged = (user) => {
+  //Checks for authentification
+  onAuthStateChanged(user) {
     this.setState({authenticationReady: true});
     this.setState({authenticated: !!user});
+  }
+
+  // Fetches current user data before in-app activity begins and stores
+  // in Redux
+  getUser() {
+    return firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${firebase.auth().currentUser.uid}`).on('value', (snapshot) => {
+      const userData = snapshot.val();
+      store.dispatch(setUser(userData));
+      this.setState({
+        dataLoaded: this.state.dataLoaded + 1
+      });
+    }, (error) => {
+    });
+  }
+
+  // Fetches posts before in-app activity begins and converts it into
+  // a parseable list of posts and stores in redux
+  getPosts() {
+    var posts = [];
+    return firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}`).on('value', (snapshot) => {
+      snapshot.forEach((post) => {
+        posts.push({
+          date: post.val().date,
+          departureTime: post.val().departureTime,
+          descritption: post.val().descritption,
+          destination: post.val().destination,
+          driver: post.val().driver,
+          posterUID: post.val().posterUID,
+          returnTime: post.val().returnTime,
+          startingLocation: post.val().startingLocation,
+          time: post.val().time,
+          postID: post.val().postID,
+        })
+      })
+      store.dispatch(setPosts(posts));
+      this.setState({
+        dataLoaded: this.state.dataLoaded + 1
+      });
+    }, (error) => {
+    });
   }
 
   render() {
     if (!this.state.authenticated) {
       return <NotAuthenticated />;
     }
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen || this.state.dataLoaded < 2) {
+      console.log("heyo");
+      console.log(this.state.dataLoaded);
       return (
         <AppLoading
           startAsync={this._loadResourcesAsync}
@@ -43,6 +93,7 @@ export default class App extends React.Component {
         />
       );
     } else {
+      console.log(this.state.dataLoaded);
       return (
         <Provider store={store}>
           <View style={styles.container}>
@@ -60,6 +111,8 @@ export default class App extends React.Component {
       //   var retrievedUser = snapshot.val();
       //   store.dispatch(setUser(retrievedUser));
       // }),
+      await this.getUser(),
+      await this.getPosts(),
       Asset.loadAsync([
         require('./assets/images/robot-dev.png'),
         require('./assets/images/robot-prod.png'),

@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-filename-extension */
 import React from 'react';
 import {
+  FlatList,
   Modal,
   // StyleSheet,
   Text,
@@ -11,18 +12,12 @@ import {
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import CreatePost from './CreatePost';
-import { setUser, watchUserData } from '../../redux/app-redux';
+import PostComponent from './PostComponent';
 
 const mapStateToProps = state => ({
   user: state.user,
+  posts: state.posts,
 });
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setUser: (user) => { dispatch(setUser(user)) },
-    watchUserData: (currUid) => { dispatch(watchUserData(currUid)) },
-  }
-}
 
 // const styles = StyleSheet.create({
 //   addPostButton: {
@@ -40,24 +35,27 @@ class PostBoard extends React.Component {
     this.state = {
       createPost: false,
       user: this.props.user,
+      posts: this.props.posts,
     };
     this.returnToPosts = this.returnToPosts.bind(this);
     this.showCreatePost = this.showCreatePost.bind(this);
     this.signOut = this.signOut.bind(this);
-    const currUid = firebase.auth().currentUser.uid;
-    this.props.watchUserData(currUid);
   }
 
+  // Shows the create post modal on activation
   showCreatePost() {
     this.setState({
       createPost: true,
     });
   }
 
+  // Currently only here for testing purposes
   signOut = () => {
     firebase.auth().signOut()
   }
 
+  // This is passed to the modal to allow for returning to the post board
+  // from the create posts screen
   returnToPosts() {
     this.setState({
       createPost: false,
@@ -65,7 +63,8 @@ class PostBoard extends React.Component {
   }
 
   render() {
-    const { createPost, user } = this.state;
+    const { createPost, user, posts } = this.state;
+    console.log(posts[0]);
     return (
       <View style={{
         padding: 10,
@@ -88,9 +87,23 @@ class PostBoard extends React.Component {
         >
           <CreatePost returnToPosts={this.returnToPosts} />
         </Modal>
+        <FlatList
+        data={posts}
+        renderItem={({item}) => (
+          <PostComponent
+          destination={item.destination}
+          date={item.date}
+          departureTime={item.departureTime}
+          driver={item.driver}
+          postID={item.postID}
+          returnTime={item.returnTime}
+          startingLocation={item.startingLocation}
+          />
+        )}
+        />
       </View>
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostBoard);
+export default connect(mapStateToProps)(PostBoard);
