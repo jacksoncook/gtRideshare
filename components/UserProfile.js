@@ -3,16 +3,11 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
 import {
-  Alert,
-  Button,
-  Image,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import * as firebase from 'firebase';
 
 const mapStateToProps = state => ({
   user: state.user,
@@ -48,8 +43,6 @@ class UserProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userEmail: '',
-      password: '',
       user: this.props.user,
     };
   }
