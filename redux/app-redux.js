@@ -19,6 +19,8 @@ const reducer = (state = initialState, action) => {
       return { ...state, user: action.value };
     case 'setUser':
       return { ...state, user: action.value };
+    case 'setPosts':
+      return { ...state, posts: action.value };
     default:
       return state;
   }
@@ -46,26 +48,9 @@ const setPosts = posts => ({
   value: posts,
 });
 
-const watchUserData = uid => function (dispatch) {
-  firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${uid}`).on('value', (snapshot) => {
-    const userData = snapshot.val();
-    dispatch(setUser(userData));
-  }, (error) => {
-  });
-};
-
-const watchPosts = () => function (dispatch) {
-  firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}`).on('value', (snapshot) => {
-    const posts = snapshot.val();
-    dispatch(setPosts(posts));
-  }, (error) => {
-  });
-};
-
-// const createPost =
 // Store
 
 const store = createStore(reducer, applyMiddleware(thunkMiddleware));
 export {
-  store, editUser, createPost, setUser, watchUserData, watchPosts,
+  store, editUser, createPost, setUser, setPosts,
 };
