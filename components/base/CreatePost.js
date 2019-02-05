@@ -19,8 +19,6 @@ const mapStateToProps = state => ({
   user: state.user,
 });
 
-// This component contains the create post form
-
 const styles = StyleSheet.create({
   smallInput: {
     paddingRight: 20,
@@ -45,6 +43,8 @@ const styles = StyleSheet.create({
 
 });
 
+// This component contains the create post form
+
 class CreatePost extends React.Component {
   constructor(props) {
     super(props);
@@ -62,6 +62,7 @@ class CreatePost extends React.Component {
     this.onToggleDriver = this.onToggleDriver.bind(this);
   }
 
+  // This method pushes the new post to firebase dtabase
   onPostPress() {
     const {
       user,
@@ -84,6 +85,7 @@ class CreatePost extends React.Component {
       date: postDate,
       driver: postDriver,
       posterUID: user.uID,
+      postID: postId,
       time: new Date().toLocaleString(),
     }, (error) => {
       if (error) {
@@ -103,6 +105,7 @@ class CreatePost extends React.Component {
     });
   }
 
+  // This method allows for the switch to toggle the state of the component
   onToggleDriver() {
     this.setState(prevState => ({
       postDriver: !prevState.postDriver,
