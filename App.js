@@ -83,8 +83,6 @@ export default class App extends React.Component {
       return <NotAuthenticated />;
     }
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen || this.state.dataLoaded < 2) {
-      console.log("heyo");
-      console.log(this.state.dataLoaded);
       return (
         <AppLoading
           startAsync={this._loadResourcesAsync}
@@ -93,7 +91,6 @@ export default class App extends React.Component {
         />
       );
     } else {
-      console.log(this.state.dataLoaded);
       return (
         <Provider store={store}>
           <View style={styles.container}>
