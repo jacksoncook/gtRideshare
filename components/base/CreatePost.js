@@ -10,13 +10,17 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { connect } from 'react-redux';
+import { connect, setUser } from 'react-redux';
 import * as firebase from 'firebase';
 
 const FIREBASE_ATTRIBUTES = require('../../constants/FirebaseAttributes');
 
 const mapStateToProps = state => ({
   user: state.user,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setUser: (user) => { dispatch(setUser(user)); },
 });
 
 const styles = StyleSheet.create({
@@ -76,6 +80,7 @@ class CreatePost extends React.Component {
     } = this.state;
     const par = this.props;
     const postId = `${user.uID}-${user.postCount}`;
+
     firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}/${postId}`).set({
       description: postDescription,
       startingLocation: postStartingLocation,
@@ -98,6 +103,11 @@ class CreatePost extends React.Component {
           if (secondError) {
             Alert.alert(error.message);
           } else {
+            // eslint-disable-next-line prefer-const
+            let updatedUser = user;
+            updatedUser.postCount = count;
+            this.setState({ user: updatedUser });
+            this.props.setUser(this.state.user);
             par.returnToPosts();
           }
         });
@@ -211,4 +221,4 @@ class CreatePost extends React.Component {
     );
   }
 }
-export default connect(mapStateToProps)(CreatePost);
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePost);
