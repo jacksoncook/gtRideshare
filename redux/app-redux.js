@@ -15,8 +15,6 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'editUser':
-      return { ...state, user: action.value };
     case 'setUser':
       return { ...state, user: action.value };
     case 'setPosts':
@@ -27,11 +25,6 @@ const reducer = (state = initialState, action) => {
 };
 
 // Aciton Creators
-
-const editUser = user => ({
-  type: 'editUser',
-  value: user,
-});
 
 const createPost = post => ({
   type: 'createPost',
@@ -52,5 +45,5 @@ const setPosts = posts => ({
 
 const store = createStore(reducer, applyMiddleware(thunkMiddleware));
 export {
-  store, editUser, createPost, setUser, setPosts,
+  store, createPost, setUser, setPosts,
 };
