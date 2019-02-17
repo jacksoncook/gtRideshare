@@ -71,6 +71,7 @@ export default class RegistrationComponent extends React.Component {
         .then(() => {
           const uid = firebase.auth().currentUser.uid;
           firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${uid}`).set({
+            bio: 'NoBio',
             firstName: userFirstName,
             lastName: userLastName,
             email: userEmail,
