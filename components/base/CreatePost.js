@@ -10,8 +10,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { connect, setUser } from 'react-redux';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
+import { createPost, editUser } from '../../redux/app-redux';
 
 const FIREBASE_ATTRIBUTES = require('../../constants/FirebaseAttributes');
 
@@ -20,7 +21,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setUser: (user) => { dispatch(setUser(user)); },
+  editUser: (user) => { dispatch(editUser(user)); },
+  createPost: (post) => { dispatch(createPost(post)); },
 });
 
 const styles = StyleSheet.create({
@@ -53,7 +55,6 @@ class CreatePost extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: this.props.user,
       postDescription: '',
       postStartingLocation: '',
       postDestination: '',
@@ -69,7 +70,6 @@ class CreatePost extends React.Component {
   // This method pushes the new post to firebase dtabase
   onPostPress() {
     const {
-      user,
       postDescription,
       postStartingLocation,
       postDestination,
@@ -78,9 +78,8 @@ class CreatePost extends React.Component {
       postDate,
       postDriver,
     } = this.state;
-    const par = this.props;
+    const { user } = this.props;
     const postId = `${user.uID}-${user.postCount}`;
-
     firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}/${postId}`).set({
       description: postDescription,
       startingLocation: postStartingLocation,
@@ -106,9 +105,8 @@ class CreatePost extends React.Component {
             // eslint-disable-next-line prefer-const
             let updatedUser = user;
             updatedUser.postCount = count;
-            this.setState({ user: updatedUser });
-            this.props.setUser(this.state.user);
-            par.returnToPosts();
+            this.props.editUser(updatedUser);
+            this.props.returnToPosts();
           }
         });
       }
