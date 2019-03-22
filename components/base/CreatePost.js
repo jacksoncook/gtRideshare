@@ -81,7 +81,7 @@ class CreatePost extends React.Component {
     const { user } = this.props;
     const postId = `${user.uID}-${user.postCount}`;
     const date = new Date();
-    const formattedDate = `${date.getFullYear().toString()}-${(date.getMonth() + 1).toString()}-${date.getHours().toString()}${date.getMinutes().toString()}${date.getSeconds().toString()}`;
+    const formattedDate = `${(2019 - date.getFullYear()).toString()}-${(12 - date.getMonth() - 1).toString()}-${(24 - date.getHours()).toString()}${(60 - date.getMinutes()).toString()}${(60 - date.getSeconds()).toString()}`;
     firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}/${postId}`).set({
       description: postDescription,
       startingLocation: postStartingLocation,
