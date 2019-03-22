@@ -3,8 +3,9 @@
 import React from 'react';
 import {
   FlatList,
+  Image,
   Modal,
-  // StyleSheet,
+  StyleSheet,
   Text,
   TouchableHighlight,
   View,
@@ -13,34 +14,49 @@ import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import CreatePost from './CreatePost';
 import PostComponent from './PostComponent';
+import { watchPosts } from '../../redux/app-redux';
 
 const mapStateToProps = state => ({
   user: state.user,
   posts: state.posts,
 });
 
-// const styles = StyleSheet.create({
-//   addPostButton: {
-//     position: 'absolute',
-//     right: 15,
-//     bottom: 15,
-//   },
-// });
+const mapDispatchToProps = dispatch => ({
+  watchPosts: () => { dispatch(watchPosts()); },
+});
+
+const styles = StyleSheet.create({
+  addPostButton: {
+    position: 'absolute',
+    right: 15,
+    bottom: 15,
+  },
+});
 
 // This component contains the post board
 
 class PostBoard extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
       createPost: false,
       user: this.props.user,
-      posts: this.props.posts,
+      // posts: this.props.posts,
     };
+    this.props.watchPosts();
     this.returnToPosts = this.returnToPosts.bind(this);
     this.showCreatePost = this.showCreatePost.bind(this);
     this.signOut = this.signOut.bind(this);
   }
+  
+  static navigationOptions = {
+    title: 'Posts',
+    headerStyle: {
+      backgroundColor: '#F5D580',
+    },
+    color: '#F5D580',
+  };
 
   // Shows the create post modal on activation
   showCreatePost() {
@@ -63,7 +79,8 @@ class PostBoard extends React.Component {
   }
 
   render() {
-    const { createPost, user, posts } = this.state;
+    const { createPost, user } = this.state;
+    const { posts } = this.props;
     console.log(posts[0]);
     return (
       <View style={{
@@ -72,13 +89,6 @@ class PostBoard extends React.Component {
         flex: 1,
       }}
       >
-        <TouchableHighlight onPress={this.showCreatePost}>
-          {/* <Image
-            source={require('../../assets/images/addPost.png')}
-            style={styles.addPostButton}
-          /> */}
-          <Text>Yolo</Text>
-        </TouchableHighlight>
         <Modal
           transparent={false}
           visible={createPost}
@@ -101,9 +111,16 @@ class PostBoard extends React.Component {
           />
         )}
         />
+        <TouchableHighlight onPress={this.showCreatePost}>
+          <Image
+            source={require('../../assets/images/addPost.png')}
+            style={styles.addPostButton}
+          />
+          {/* <Text>Yolo</Text> */}
+        </TouchableHighlight>
       </View>
     );
   }
 }
 
-export default connect(mapStateToProps)(PostBoard);
+export default connect(mapStateToProps, mapDispatchToProps)(PostBoard);
