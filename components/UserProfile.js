@@ -13,16 +13,14 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';
-import { setUser } from '../redux/app-redux';
-
-const FIREBASE_ATTRIBUTES = require('../constants/FirebaseAttributes');
+import { editUser } from '../redux/app-redux';
 
 const mapStateToProps = state => ({
   user: state.user,
 });
 
 const mapDispatchToProps = dispatch => ({
-  setUser: (user) => { dispatch(setUser(user)); },
+  editUser: (user) => { dispatch(editUser(user)); },
 });
 
 const styles = StyleSheet.create({
@@ -52,15 +50,11 @@ const styles = StyleSheet.create({
 // This component contains the login form
 
 class UserProfile extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
       user: this.props.user,
-      initBio: '',
-      initFirstName: '',
-      initLastName: '',
-      initEmail: '',
-      initPhoneNumber: '',
       rides: 0,
       uID: '',
       currBio: '',
@@ -69,21 +63,24 @@ class UserProfile extends React.Component {
       currEmail: '',
       currPhoneNumber: '',
       postCount: 0,
-      edited: true,
+      edited: false,
     };
-    this.profileEdited = this.profileEdited.bind(this);
     this.updateProfile = this.updateProfile.bind(this);
     this.resetProfile = this.resetProfile.bind(this);
+    this.signOut = this.signOut.bind(this);
   }
+
+  static navigationOptions = {
+    title: 'Profile',
+    headerStyle: {
+      backgroundColor: '#F5D580',
+    },
+    color: '#F5D580',
+  };
 
   componentWillMount() {
     const { user } = this.state;
     this.setState({
-      initBio: user.bio,
-      initFirstName: user.firstName,
-      initLastName: user.lastName,
-      initEmail: user.email,
-      initPhoneNumber: user.phoneNumber,
       currBio: user.bio,
       currFirstName: user.firstName,
       currLastName: user.lastName,
@@ -95,51 +92,23 @@ class UserProfile extends React.Component {
     });
   }
 
-  // Returns whether a field has been edited to determine
-  // if update profile button should be displayed
-  profileEdited() {
+  // Resets profile to how it was before
+  resetProfile() {
     const {
-      currBio,
-      currFirstName,
-      currLastName,
-      currEmail,
-      currPhoneNumber,
-      initBio,
-      initFirstName,
-      initLastName,
-      initEmail,
-      initPhoneNumber,
+      user
     } = this.state;
-    if (currBio !== initBio
-      || currFirstName !== initFirstName
-      || currLastName !== initLastName
-      || currEmail !== initEmail
-      || currPhoneNumber !== initPhoneNumber) {
-      this.setState({
-        edited: true,
-      });
-    }
     this.setState({
+      currBio: user.bio,
+      currFirstName: user.firstName,
+      currLastName: user.lastName,
+      currEmail: user.email,
+      currPhoneNumber: user.phoneNumber,
       edited: false,
     });
   }
 
-  // Resets profile to how it was before
-  resetProfile() {
-    const {
-      initBio,
-      initFirstName,
-      initLastName,
-      initEmail,
-      initPhoneNumber,
-    } = this.state;
-    this.setState({
-      currBio: initBio,
-      currFirstName: initFirstName,
-      currLastName: initLastName,
-      currEmail: initEmail,
-      currPhoneNumber: initPhoneNumber,
-    });
+  signOut() {
+    firebase.auth().signOut();
   }
 
   // Updates profile in firebase
@@ -150,37 +119,21 @@ class UserProfile extends React.Component {
       currLastName,
       currEmail,
       currPhoneNumber,
-      uID,
       user,
-      rides,
-      postCount,
     } = this.state;
-    firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${uID}`).set({
-      bio: currBio,
-      firstName: currFirstName,
-      lastName: currLastName,
-      email: currEmail,
-      phoneNumber: currPhoneNumber,
-      uID,
-      rides,
-      postCount,
-    }, (error) => {
-      if (error) {
-        Alert.alert(error.message);
-      } else {
-        // eslint-disable-next-line prefer-const
-        let updatedUser = user;
-        updatedUser.bio = currBio;
-        updatedUser.firstName = currFirstName;
-        updatedUser.lastName = currLastName;
-        updatedUser.email = currEmail;
-        updatedUser.phoneNumber = currPhoneNumber;
-        updatedUser.uID = user.uID;
-        updatedUser.postCount = user.postCount;
-        updatedUser.rides = user.rides;
-        this.setState({ user: updatedUser });
-        this.props.setUser(updatedUser);
-      }
+    let updatedUser = user;
+    updatedUser.bio = currBio;
+    updatedUser.firstName = currFirstName;
+    updatedUser.lastName = currLastName;
+    updatedUser.email = currEmail;
+    updatedUser.phoneNumber = currPhoneNumber;
+    updatedUser.uID = user.uID;
+    updatedUser.postCount = user.postCount;
+    updatedUser.rides = user.rides;
+    this.props.editUser(updatedUser);
+    this.setState({
+      user: updatedUser,
+      edited: false,
     });
   }
 
@@ -202,6 +155,11 @@ class UserProfile extends React.Component {
         flex: 1,
       }}
       >
+      <Button
+        onPress={this.signOut}
+        color="#004F9F"
+        title="Logout"
+      />
         <View style={styles.Label}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
           About Me
@@ -210,7 +168,12 @@ class UserProfile extends React.Component {
         <View style={styles.loginInputs}>
           <TextInput
             value={currBio}
-            onChangeText={text => this.setState({ currBio: text })}
+            multiline
+            editable={this.props.screenProps.myProfile}
+            onChangeText={text => this.setState({
+              currBio: text,
+              edited: true,
+            })}
           />
         </View>
         <View style={styles.Label}>
@@ -221,7 +184,11 @@ class UserProfile extends React.Component {
         <View style={styles.loginInputs}>
           <TextInput
             value={currFirstName}
-            onChangeText={text => this.setState({ currFirstName: text })}
+            editable={this.props.screenProps.myProfile}
+            onChangeText={text => this.setState({
+              currFirstName: text,
+              edited: true,
+            })}
           />
         </View>
         <View style={styles.Label}>
@@ -232,7 +199,11 @@ class UserProfile extends React.Component {
         <View style={styles.loginInputs}>
           <TextInput
             value={currLastName}
-            onChangeText={text => this.setState({ currLastName: text })}
+            editable={this.props.screenProps.myProfile}
+            onChangeText={text => this.setState({
+              currLastName: text,
+              edited: true,
+            })}
           />
         </View>
         <View style={styles.Label}>
@@ -243,7 +214,11 @@ class UserProfile extends React.Component {
         <View style={styles.loginInputs}>
           <TextInput
             value={currEmail}
-            onChangeText={text => this.setState({ currEmail: text })}
+            editable={this.props.screenProps.myProfile}
+            onChangeText={text => this.setState({
+              currEmail: text,
+              edited: true,
+            })}
           />
         </View>
         <View style={styles.Label}>
@@ -254,7 +229,11 @@ class UserProfile extends React.Component {
         <View style={styles.loginInputs}>
           <TextInput
             value={currPhoneNumber}
-            onChangeText={text => this.setState({ currPhoneNumber: text })}
+            editable={this.props.screenProps.myProfile}
+            onChangeText={text => this.setState({
+              currPhoneNumber: text,
+              edited: true,
+            })}
           />
         </View>
         <View style={styles.Label}>
@@ -276,7 +255,7 @@ class UserProfile extends React.Component {
             alignItems: 'center',
           }}
           >
-            <TouchableHighlight onPress={this.resetProfile}>
+            <TouchableHighlight onPress={this.resetProfile} underlayColor='white'>
               <Text
                 style={{ color: '#004F9F' }}
                 onClick={this.resetProfile}
@@ -290,7 +269,15 @@ class UserProfile extends React.Component {
               title="Update Profile"
             />
           </View>
-        ) : null}
+        ) : 
+        <View style={{
+          flex: 1,
+          flexDirection: 'row',
+          paddingVertical: 20,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        />}
 
       </View>
     );
