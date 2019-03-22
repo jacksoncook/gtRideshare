@@ -13,7 +13,6 @@ const FIREBASE_ATTRIBUTES = require('./constants/FirebaseAttributes');
 // Main app that is run by expo when expo start is ran
 
 export default class App extends React.Component {
-
   
   constructor(props) {
     super(props);
@@ -95,7 +94,7 @@ export default class App extends React.Component {
         <Provider store={store}>
           <View style={styles.container}>
             {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            <AppNavigator />
+            <AppNavigator screenProps={ {myProfile: true} } />
           </View>
         </Provider>
       );
