@@ -7,6 +7,13 @@ import PostBoard from '../components/base/PostBoard';
 import LinksScreen from '../screens/LinksScreen';
 import UserProfile from '../components/UserProfile';
 
+const tabBarOpt = {
+  style: {
+    backgroundColor: '#F5D580',
+  },
+  activeTintColor: 'black',
+  inactiveTintColor: '#004F9F',
+};
 
 // This component creates the logged in view.  Currently it is being used
 // to test additions such as the login screen in this case
@@ -27,6 +34,7 @@ PostStack.navigationOptions = {
       }
     />
   ),
+  tabBarOptions: tabBarOpt,
 };
 
 const LinksStack = createStackNavigator({
@@ -41,10 +49,11 @@ LinksStack.navigationOptions = {
       name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
     />
   ),
+  tabBarOptions: tabBarOpt,
 };
 
 const UserStack = createStackNavigator({
-  UserProfile,
+  Profile: UserProfile,
 });
 
 UserStack.navigationOptions = {
@@ -55,6 +64,7 @@ UserStack.navigationOptions = {
       name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
     />
   ),
+  tabBarOptions: tabBarOpt,
 };
 
 export default createBottomTabNavigator({

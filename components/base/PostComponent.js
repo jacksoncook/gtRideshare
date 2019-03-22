@@ -10,10 +10,10 @@ import {
 
 const styles = StyleSheet.create({
   label: {
-    paddingRight: 20,
-    paddingLeft: 20,
+    paddingRight: 10,
+    paddingLeft: 10,
     flex: 1,
-    backgroundColor: 'grey',
+    backgroundColor: 'white',
   },
 
 });
@@ -32,9 +32,11 @@ export default class PostComponent extends React.Component {
     const post = this.props;
     return (
       <View style={{
-        padding: 10,
+        padding: 5,
         backgroundColor: 'white',
         flex: 1,
+        borderColor: 'grey',
+        borderWidth: 1,
       }}
       >
         <View style={styles.label}>
