@@ -54,7 +54,7 @@ export default class App extends React.Component {
   // a parseable list of posts and stores in redux
   getPosts() {
     var posts = [];
-    return firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}`).on('value', (snapshot) => {
+    return firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}`).orderByChild('time').on('value', (snapshot) => {
       snapshot.forEach((post) => {
         posts.push({
           date: post.val().date,

@@ -80,6 +80,8 @@ class CreatePost extends React.Component {
     } = this.state;
     const { user } = this.props;
     const postId = `${user.uID}-${user.postCount}`;
+    const date = new Date();
+    const formattedDate = `${date.getFullYear().toString()}-${(date.getMonth() + 1).toString()}-${date.getHours().toString()}${date.getMinutes().toString()}${date.getSeconds().toString()}`;
     firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}/${postId}`).set({
       description: postDescription,
       startingLocation: postStartingLocation,
@@ -90,7 +92,7 @@ class CreatePost extends React.Component {
       driver: postDriver,
       posterUID: user.uID,
       postID: postId,
-      time: new Date().toLocaleString(),
+      time: formattedDate,
     }, (error) => {
       if (error) {
         Alert.alert(error.message);
