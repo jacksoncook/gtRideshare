@@ -53,21 +53,33 @@ export default class App extends React.Component {
   // Fetches posts before in-app activity begins and converts it into
   // a parseable list of posts and stores in redux
   getPosts() {
-    var posts = [];
+    const posts = [];
+    posts.length = 0;
+    var alreadyAdded = new Set();
     return firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}`).orderByChild('time').on('value', (snapshot) => {
       snapshot.forEach((post) => {
-        posts.push({
-          date: post.val().date,
-          departureTime: post.val().departureTime,
-          descritption: post.val().descritption,
-          destination: post.val().destination,
-          driver: post.val().driver,
-          posterUID: post.val().posterUID,
-          returnTime: post.val().returnTime,
-          startingLocation: post.val().startingLocation,
-          time: post.val().time,
-          postID: post.val().postID,
-        })
+        if (!alreadyAdded.has(post.val().postID)) {
+          const requesters = new Set();
+          if (post.val().requests !== undefined) {
+            for (const requester in post.val().requests) {
+              requesters.add(requester);
+            }
+          }
+          posts.push({
+            date: post.val().date,
+            departureTime: post.val().departureTime,
+            description: post.val().description,
+            destination: post.val().destination,
+            driver: post.val().driver,
+            posterUID: post.val().posterUID,
+            returnTime: post.val().returnTime,
+            startingLocation: post.val().startingLocation,
+            time: post.val().time,
+            postID: post.val().postID,
+            requests: requesters,
+          })
+          alreadyAdded.add(post.val().postID);
+        }
       })
       store.dispatch(setPosts(posts));
       this.setState({
