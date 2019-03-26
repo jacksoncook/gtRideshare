@@ -137,6 +137,7 @@ class CreatePost extends React.Component {
               borderColor: '#C4C4C4',
               paddingTop: 50,
             }}
+            multiline
             placeholder="Description"
             onChangeText={text => this.setState({ postDescription: text })}
           />
@@ -202,7 +203,10 @@ class CreatePost extends React.Component {
         </View>
         <Button
           onPress={this.onPostPress}
-          style={{ flex: 1, flexDirection: 'row' }}
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+          }}
           color="#F5D580"
           title="Post"
         />
@@ -215,7 +219,6 @@ class CreatePost extends React.Component {
         }}
         >
           <Text onPress={this.props.returnToPosts}>Cancel Post Creation</Text>
-
         </View>
       </View>
     );

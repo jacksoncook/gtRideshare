@@ -46,6 +46,7 @@ const editUser = (user) => {
     uID,
     rides,
     postCount,
+    interestedPosts,
   } = user;
   return function (dispatch) {
     firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${uID}`).set({
@@ -57,6 +58,7 @@ const editUser = (user) => {
       uID,
       rides,
       postCount,
+      interestedPosts,
     }, (error) => {
       if (error) {
         Alert.alert(error.message);
@@ -73,26 +75,39 @@ const setPosts = posts => ({
 });
 
 const watchPosts = () => function (dispatch) {
-  let posts = [];
-  firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}`).on('value', (snapshot) => {
+  const posts = [];
+  posts.length = 0;
+  const alreadyAdded = new Set();
+  firebase.database().ref(`${FIREBASE_ATTRIBUTES.POSTS}`).orderByChild('time').on('value', (snapshot) => {
     snapshot.forEach((post) => {
-      posts.push({
-        date: post.val().date,
-        departureTime: post.val().departureTime,
-        descritption: post.val().descritption,
-        destination: post.val().destination,
-        driver: post.val().driver,
-        posterUID: post.val().posterUID,
-        returnTime: post.val().returnTime,
-        startingLocation: post.val().startingLocation,
-        time: post.val().time,
-        postID: post.val().postID,
-      });
+      if (!alreadyAdded.has(post.val().postID)) {
+        const requesters = new Set();
+        if (post.val().requests !== undefined) {
+          for (const requester in post.val().requests) {
+            requesters.add(requester);
+          }
+        }
+        posts.push({
+          date: post.val().date,
+          departureTime: post.val().departureTime,
+          description: post.val().description,
+          destination: post.val().destination,
+          driver: post.val().driver,
+          posterUID: post.val().posterUID,
+          returnTime: post.val().returnTime,
+          startingLocation: post.val().startingLocation,
+          time: post.val().time,
+          postID: post.val().postID,
+          requests: requesters,
+        });
+        alreadyAdded.add(post.val().postID);
+      }
     });
   }, (error) => {
     if (error) {
       Alert.alert(error.message);
     } else {
+      console.log(posts.length);
       dispatch(setPosts(posts));
     }
   });

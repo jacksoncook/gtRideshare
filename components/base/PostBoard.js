@@ -11,9 +11,9 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import * as firebase from 'firebase';
 import CreatePost from './CreatePost';
 import PostComponent from './PostComponent';
+import PostDetails from './PostDetails';
 import { watchPosts } from '../../redux/app-redux';
 
 const mapStateToProps = state => ({
@@ -41,15 +41,16 @@ class PostBoard extends React.Component {
     super(props);
     this.state = {
       createPost: false,
-      user: this.props.user,
-      // posts: this.props.posts,
+      postDetails: false,
+      currPost: null,
     };
     this.props.watchPosts();
     this.returnToPosts = this.returnToPosts.bind(this);
     this.showCreatePost = this.showCreatePost.bind(this);
-    this.signOut = this.signOut.bind(this);
+    this.showPostDetails = this.showPostDetails.bind(this);
   }
   
+  // Settings for header and nav bar
   static navigationOptions = {
     title: 'Posts',
     headerStyle: {
@@ -63,11 +64,15 @@ class PostBoard extends React.Component {
     this.setState({
       createPost: true,
     });
+    // console.log(this.props.posts);
   }
 
-  // Currently only here for testing purposes
-  signOut = () => {
-    firebase.auth().signOut()
+  // Shows post details modal on activation
+  showPostDetails(post) {
+    this.setState({
+      postDetails: true,
+      currPost: post,
+    });
   }
 
   // This is passed to the modal to allow for returning to the post board
@@ -75,13 +80,14 @@ class PostBoard extends React.Component {
   returnToPosts() {
     this.setState({
       createPost: false,
+      postDetails: false,
     });
+    // console.log(this. props.posts.length);
   }
 
   render() {
-    const { createPost, user } = this.state;
-    const { posts } = this.props;
-    console.log(posts[0]);
+    const { createPost, currPost, postDetails } = this.state;
+    const { user, posts } = this.props;
     return (
       <View style={{
         padding: 10,
@@ -91,6 +97,18 @@ class PostBoard extends React.Component {
       >
         <Modal
           transparent={false}
+          visible={postDetails}
+          onRequestClose={() => {
+          }}
+        >
+          <PostDetails
+            returnToPosts={this.returnToPosts}
+            post={currPost}
+            uID={user.uID}
+          />
+        </Modal>
+        <Modal
+          transparent={false}
           visible={createPost}
           onRequestClose={() => {
           }}
@@ -98,25 +116,30 @@ class PostBoard extends React.Component {
           <CreatePost returnToPosts={this.returnToPosts} />
         </Modal>
         <FlatList
-        data={posts}
-        renderItem={({item}) => (
-          <PostComponent
-          destination={item.destination}
-          date={item.date}
-          departureTime={item.departureTime}
-          driver={item.driver}
-          postID={item.postID}
-          returnTime={item.returnTime}
-          startingLocation={item.startingLocation}
-          />
-        )}
+          data={posts}
+          renderItem={({item}) => (
+            !(item.requests.has(user.uID) || user.uID === item.posterUID) ?
+            <TouchableHighlight onPress={ _ => this.showPostDetails(item) }>
+              <PostComponent
+                destination={item.destination}
+                date={item.date}
+                departureTime={item.departureTime}
+                driver={item.driver}
+                postID={item.postID}
+                returnTime={item.returnTime}
+                startingLocation={item.startingLocation}
+              />
+            </TouchableHighlight>
+            :
+            null
+            )}
+        keyExtractor={(item) => item.postID}
         />
         <TouchableHighlight onPress={this.showCreatePost}>
           <Image
             source={require('../../assets/images/addPost.png')}
             style={styles.addPostButton}
           />
-          {/* <Text>Yolo</Text> */}
         </TouchableHighlight>
       </View>
     );
