@@ -70,6 +70,7 @@ class UserProfile extends React.Component {
     this.signOut = this.signOut.bind(this);
   }
 
+  // Settings for header and nav bar
   static navigationOptions = {
     title: 'Profile',
     headerStyle: {
