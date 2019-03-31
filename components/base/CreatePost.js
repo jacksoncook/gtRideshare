@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
 });
 
 // This component contains the create post form
-
 class CreatePost extends React.Component {
   constructor(props) {
     super(props);
