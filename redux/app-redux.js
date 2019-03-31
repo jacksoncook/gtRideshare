@@ -46,7 +46,7 @@ const editUser = (user) => {
     uID,
     rides,
     postCount,
-    interestedPosts,
+    matches,
   } = user;
   return function (dispatch) {
     firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${uID}`).set({
@@ -58,12 +58,22 @@ const editUser = (user) => {
       uID,
       rides,
       postCount,
-      interestedPosts,
+      matches,
     }, (error) => {
       if (error) {
         Alert.alert(error.message);
       }
       // eslint-disable-next-line prefer-const
+      console.log(matches);
+      console.log(matches.values());
+      console.log(matches.entries());
+      console.log(Array.from(matches));
+      if (matches !== undefined) {
+        matches.forEach(match => firebase.database()
+          .ref(`${FIREBASE_ATTRIBUTES.USERS}/${uID}/${FIREBASE_ATTRIBUTES.MATCHES}`)
+          .child(match)
+          .set(true));
+      }
       dispatch(setUser(user));
     });
   };
@@ -107,7 +117,6 @@ const watchPosts = () => function (dispatch) {
     if (error) {
       Alert.alert(error.message);
     } else {
-      console.log(posts.length);
       dispatch(setPosts(posts));
     }
   });

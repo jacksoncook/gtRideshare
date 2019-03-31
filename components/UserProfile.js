@@ -76,7 +76,6 @@ class UserProfile extends React.Component {
 
   componentWillMount() {
     const { user } = this.props.screenProps;
-    console.log(user);
     if (user) {
       this.setState({
         currBio: user.bio,
@@ -119,7 +118,7 @@ class UserProfile extends React.Component {
       currEmail,
       currPhoneNumber,
     } = this.state;
-    const user = this.props.screenProps;
+    const { user } = this.state;
     let updatedUser = user;
     updatedUser.bio = currBio;
     updatedUser.firstName = currFirstName;
@@ -129,6 +128,9 @@ class UserProfile extends React.Component {
     updatedUser.uID = user.uID;
     updatedUser.postCount = user.postCount;
     updatedUser.rides = user.rides;
+    updatedUser.matches = user.matches
+    console.log("asdfasdfasdf");
+    console.log(updatedUser);
     this.props.editUser(updatedUser);
     this.setState({
       user: updatedUser,
@@ -147,6 +149,7 @@ class UserProfile extends React.Component {
       rides,
       edited,
     } = this.state;
+    console.log(this.state.user);
     return (
       <View style={{
         padding: 25,
@@ -219,7 +222,7 @@ class UserProfile extends React.Component {
           </Text>
         </View>
         <View style={styles.loginInputs}>
-          {this.props.screenProps.myProfile ?
+          {this.props.screenProps.matched ?
             <TextInput
               value={currEmail}
               editable={this.props.screenProps.myProfile}
@@ -237,7 +240,7 @@ class UserProfile extends React.Component {
           </Text>
         </View>
         <View style={styles.loginInputs}>
-          {this.props.screenProps.myProfile ?
+          {this.props.screenProps.matched ?
             <TextInput
               value={currPhoneNumber}
               editable={this.props.screenProps.myProfile}
@@ -291,10 +294,9 @@ class UserProfile extends React.Component {
           alignItems: 'center',
         }}
         />}
-
       </View>
     );
   }
 }
 
-export default connect(mapDispatchToProps)(UserProfile);
+export default connect(null, mapDispatchToProps)(UserProfile);
