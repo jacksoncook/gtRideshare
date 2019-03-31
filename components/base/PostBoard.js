@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
 });
 
 // This component contains the post board
-
 class PostBoard extends React.Component {
 
   constructor(props) {
@@ -64,7 +63,6 @@ class PostBoard extends React.Component {
     this.setState({
       createPost: true,
     });
-    // console.log(this.props.posts);
   }
 
   // Shows post details modal on activation
@@ -82,7 +80,6 @@ class PostBoard extends React.Component {
       createPost: false,
       postDetails: false,
     });
-    // console.log(this. props.posts.length);
   }
 
   render() {

@@ -5,15 +5,14 @@ import React from 'react';
 import {
   Alert,
   Button,
+  Modal,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableHighlight,
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';
-
+import UserProfile from '../UserProfile';
 
 const styles = StyleSheet.create({
   label: {
@@ -42,17 +41,21 @@ const styles = StyleSheet.create({
 const FIREBASE_ATTRIBUTES = require('../../constants/FirebaseAttributes');
 
 // This component contains the login form
-
 class PostDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       post: this.props.post,
       uID: this.props.uID,
+      exploringUser: false,
     };
     this.requestContact = this.requestContact.bind(this);
+    this.exploreUserProfile = this.exploreUserProfile.bind(this);
+    this.showExploringUser = this.showExploringUser.bind(this);
+    this.returnToPost = this.returnToPost.bind(this);
   }
 
+  // Request contact with another user through their post
   requestContact() {
     const { post, uID } = this.state;
     firebase.database()
@@ -66,6 +69,32 @@ class PostDetails extends React.Component {
     this.props.returnToPosts();
   }
 
+  // Get user profile for exploration
+  exploreUserProfile() {
+    const { posterUID } = this.state.post;
+    firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${posterUID}`).on('value', (snapshot) => {
+      this.setState({ userToExplore: snapshot.val() });
+      this.showExploringUser();
+    }, (error) => {
+      if (error) {
+        Alert.alert(error.message);
+      }
+    });
+  }
+
+  // Return to this screen from user profile exploring
+  returnToPost() {
+    this.setState({
+      exploringUser: false,
+    });
+  }
+
+  // Shows the explore user modal
+  showExploringUser() {
+    this.setState({
+      exploringUser: true,
+    });
+  }
 
   render() {
     const {
@@ -76,8 +105,6 @@ class PostDetails extends React.Component {
       returnTime,
       date,
       driver,
-      posterUID,
-      postID,
     } = this.state.post;
     return (
       <View style={{
@@ -86,9 +113,21 @@ class PostDetails extends React.Component {
         flex: 1,
       }}
       >
+        <Modal
+          transparent={false}
+          visible={this.state.exploringUser}
+          onRequestClose={() => {
+          }}
+        >
+          <UserProfile
+            returnToPosts={this.returnToPosts}
+            screenProps={{ user: this.state.userToExplore, myProfile: false }}
+            returnToPost={this.returnToPost}
+          />
+        </Modal>
         <View style={{
           backgroundColor: 'white',
-          flex: 1,
+          flex: 2,
         }}
         >
           <View style={styles.Label}>
@@ -163,6 +202,15 @@ class PostDetails extends React.Component {
           </View>
         </View>
         <Button
+          onPress={this.exploreUserProfile}
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+          }}
+          color="#004F9F"
+          title="Explore this user's profile"
+        />
+        <Button
           onPress={this.requestContact}
           style={{
             flex: 1,
@@ -171,16 +219,15 @@ class PostDetails extends React.Component {
           color="#F5D580"
           title="Request Contact"
         />
-        <View style={{
-          flex: 1,
-          flexDirection: 'row',
-          paddingVertical: 20,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
-          <Text onPress={this.props.returnToPosts}>Return to Post Board</Text>
-        </View>
+        <Button
+          onPress={this.props.returnToPosts}
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+          }}
+          color="#004F9F"
+          title="Return to Posts"
+        />
       </View>
     );
   }
