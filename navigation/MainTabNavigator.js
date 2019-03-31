@@ -4,7 +4,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import PostBoard from '../components/base/PostBoard';
-import LinksScreen from '../screens/LinksScreen';
+import HistoryBoard from '../components/history/HistoryBoard';
 import UserProfile from '../components/UserProfile';
 
 const tabBarOpt = {
@@ -37,12 +37,12 @@ PostStack.navigationOptions = {
   tabBarOptions: tabBarOpt,
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+const HistoryStack = createStackNavigator({
+  History: HistoryBoard,
 });
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+HistoryStack.navigationOptions = {
+  tabBarLabel: 'History',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -69,6 +69,6 @@ UserStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   PostStack,
-  LinksStack,
+  HistoryStack,
   UserStack,
 });
