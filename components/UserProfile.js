@@ -3,7 +3,6 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
 import {
-  Alert,
   Button,
   StyleSheet,
   Text,
@@ -14,10 +13,6 @@ import {
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import { editUser } from '../redux/app-redux';
-
-const mapStateToProps = state => ({
-  user: state.user,
-});
 
 const mapDispatchToProps = dispatch => ({
   editUser: (user) => { dispatch(editUser(user)); },
@@ -48,13 +43,12 @@ const styles = StyleSheet.create({
 });
 
 // This component contains the login form
-
 class UserProfile extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      user: this.props.user,
+      user: this.props.screenProps.user,
       rides: 0,
       uID: '',
       currBio: '',
@@ -64,6 +58,7 @@ class UserProfile extends React.Component {
       currPhoneNumber: '',
       postCount: 0,
       edited: false,
+
     };
     this.updateProfile = this.updateProfile.bind(this);
     this.resetProfile = this.resetProfile.bind(this);
@@ -80,24 +75,27 @@ class UserProfile extends React.Component {
   };
 
   componentWillMount() {
-    const { user } = this.state;
-    this.setState({
-      currBio: user.bio,
-      currFirstName: user.firstName,
-      currLastName: user.lastName,
-      currEmail: user.email,
-      currPhoneNumber: user.phoneNumber,
-      rides: user.rides,
-      uID: user.uID,
-      postCount: user.postCount,
-    });
+    const { user } = this.props.screenProps;
+    console.log(user);
+    if (user) {
+      this.setState({
+        currBio: user.bio,
+        currFirstName: user.firstName,
+        currLastName: user.lastName,
+        currEmail: user.email,
+        currPhoneNumber: user.phoneNumber,
+        rides: user.rides,
+        uID: user.uID,
+        postCount: user.postCount,
+      });
+    }
   }
 
   // Resets profile to how it was before
   resetProfile() {
     const {
       user
-    } = this.state;
+    } = this.props.screenProps;
     this.setState({
       currBio: user.bio,
       currFirstName: user.firstName,
@@ -120,8 +118,8 @@ class UserProfile extends React.Component {
       currLastName,
       currEmail,
       currPhoneNumber,
-      user,
     } = this.state;
+    const user = this.props.screenProps;
     let updatedUser = user;
     updatedUser.bio = currBio;
     updatedUser.firstName = currFirstName;
@@ -151,16 +149,24 @@ class UserProfile extends React.Component {
     } = this.state;
     return (
       <View style={{
-        padding: 10,
+        padding: 25,
         backgroundColor: 'white',
         flex: 1,
       }}
       >
+      {this.props.screenProps.myProfile ?
       <Button
         onPress={this.signOut}
         color="#004F9F"
         title="Logout"
       />
+      :
+      
+      <Button
+        onPress={this.props.returnToPost}
+        color="#004F9F"
+        title="Return to Post"
+      />}
         <View style={styles.Label}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
           About Me
@@ -213,14 +219,17 @@ class UserProfile extends React.Component {
           </Text>
         </View>
         <View style={styles.loginInputs}>
-          <TextInput
-            value={currEmail}
-            editable={this.props.screenProps.myProfile}
-            onChangeText={text => this.setState({
-              currEmail: text,
-              edited: true,
-            })}
-          />
+          {this.props.screenProps.myProfile ?
+            <TextInput
+              value={currEmail}
+              editable={this.props.screenProps.myProfile}
+              onChangeText={text => this.setState({
+                currEmail: text,
+                edited: true,
+              })}
+            />
+            :
+            <Text>*****@gatech.edu</Text>}
         </View>
         <View style={styles.Label}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
@@ -228,14 +237,17 @@ class UserProfile extends React.Component {
           </Text>
         </View>
         <View style={styles.loginInputs}>
-          <TextInput
-            value={currPhoneNumber}
-            editable={this.props.screenProps.myProfile}
-            onChangeText={text => this.setState({
-              currPhoneNumber: text,
-              edited: true,
-            })}
-          />
+          {this.props.screenProps.myProfile ?
+            <TextInput
+              value={currPhoneNumber}
+              editable={this.props.screenProps.myProfile}
+              onChangeText={text => this.setState({
+                currPhoneNumber: text,
+                edited: true,
+              })}
+            />
+            :
+            <Text>***-***-****</Text>}
         </View>
         <View style={styles.Label}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
@@ -285,4 +297,4 @@ class UserProfile extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);
+export default connect(mapDispatchToProps)(UserProfile);

@@ -5,10 +5,14 @@ import * as firebase from 'firebase';
 import AppNavigator from './navigation/AppNavigator';
 import NotAuthenticated from './screens/NotAuthenticated';
 import ApiKeys from './constants/ApiKeys.js';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import { store, setUser, setPosts } from './redux/app-redux';
 
 const FIREBASE_ATTRIBUTES = require('./constants/FirebaseAttributes');
+
+const mapStateToProps = state => ({
+  user: state.user,
+});
 
 // Main app that is run by expo when expo start is ran
 
@@ -44,7 +48,8 @@ export default class App extends React.Component {
       const userData = snapshot.val();
       store.dispatch(setUser(userData));
       this.setState({
-        dataLoaded: this.state.dataLoaded + 1
+        dataLoaded: this.state.dataLoaded + 1,
+        user: userData,
       });
     }, (error) => {
     });
@@ -106,7 +111,7 @@ export default class App extends React.Component {
         <Provider store={store}>
           <View style={styles.container}>
             {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            <AppNavigator screenProps={ {myProfile: true} } />
+            <AppNavigator screenProps={ {user: this.state.user, myProfile: true} } />
           </View>
         </Provider>
       );
@@ -115,10 +120,6 @@ export default class App extends React.Component {
 
   _loadResourcesAsync = async () => {
     return Promise.all([
-      // firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
-      //   var retrievedUser = snapshot.val();
-      //   store.dispatch(setUser(retrievedUser));
-      // }),
       await this.getUser(),
       await this.getPosts(),
       Asset.loadAsync([
