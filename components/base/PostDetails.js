@@ -47,12 +47,14 @@ class PostDetails extends React.Component {
     this.state = {
       post: this.props.post,
       uID: this.props.uID,
+      matches: this.props.matches,
       exploringUser: false,
     };
     this.requestContact = this.requestContact.bind(this);
     this.exploreUserProfile = this.exploreUserProfile.bind(this);
     this.showExploringUser = this.showExploringUser.bind(this);
     this.returnToPost = this.returnToPost.bind(this);
+    this.removePost = this.removePost.bind(this);
   }
 
   // Request contact with another user through their post
@@ -89,6 +91,14 @@ class PostDetails extends React.Component {
     });
   }
 
+  // Delete post from firebase database
+  removePost() {
+    const { postID } = this.state.post;
+    firebase.database()
+      .ref(`${FIREBASE_ATTRIBUTES.POSTS}`).child(postID).set(null);
+    this.props.returnToPosts();
+  }
+
   // Shows the explore user modal
   showExploringUser() {
     this.setState({
@@ -105,7 +115,11 @@ class PostDetails extends React.Component {
       returnTime,
       date,
       driver,
+      posterUID,
+      requests,
     } = this.state.post;
+    const { matches } = this.state;
+    const matched = matches.has(posterUID);
     return (
       <View style={{
         padding: 10,
@@ -121,7 +135,7 @@ class PostDetails extends React.Component {
         >
           <UserProfile
             returnToPosts={this.returnToPosts}
-            screenProps={{ user: this.state.userToExplore, myProfile: false }}
+            screenProps={{ user: this.state.userToExplore, myProfile: false, matched }}
             returnToPost={this.returnToPost}
           />
         </Modal>
@@ -201,24 +215,44 @@ class PostDetails extends React.Component {
             </Text>
           </View>
         </View>
-        <Button
-          onPress={this.exploreUserProfile}
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-          }}
-          color="#004F9F"
-          title="Explore this user's profile"
-        />
-        <Button
-          onPress={this.requestContact}
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-          }}
-          color="#F5D580"
-          title="Request Contact"
-        />
+        {this.state.uID !== posterUID
+          ? (
+            <Button
+              onPress={this.exploreUserProfile}
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+              }}
+              color="#004F9F"
+              title="Explore this user's profile"
+            />
+          )
+          : null}
+        {this.state.uID !== posterUID && !requests.has(this.state.uID)
+          ? (
+            <Button
+              onPress={this.requestContact}
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+              }}
+              color="#F5D580"
+              title="Request Contact"
+            />
+          ) : null}
+        {this.state.uID === posterUID
+          ? (
+            <Button
+              onPress={this.removePost}
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+              }}
+              color="#8B0000"
+              title="Delete Post"
+            />
+          )
+          : null}
         <Button
           onPress={this.props.returnToPosts}
           style={{

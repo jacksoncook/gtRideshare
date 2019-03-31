@@ -102,6 +102,7 @@ class PostBoard extends React.Component {
             returnToPosts={this.returnToPosts}
             post={currPost}
             uID={user.uID}
+            matches={user.matches}
           />
         </Modal>
         <Modal
