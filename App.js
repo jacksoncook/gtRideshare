@@ -46,6 +46,13 @@ export default class App extends React.Component {
   getUser() {
     return firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${firebase.auth().currentUser.uid}`).on('value', (snapshot) => {
       const userData = snapshot.val();
+      const matches = new Set();
+      if (userData.matches !== undefined) {
+        for (const match in userData.matches) {
+          matches.add(match);
+        }
+      }
+      userData.matches = matches;
       store.dispatch(setUser(userData));
       this.setState({
         dataLoaded: this.state.dataLoaded + 1,
@@ -111,7 +118,7 @@ export default class App extends React.Component {
         <Provider store={store}>
           <View style={styles.container}>
             {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            <AppNavigator screenProps={ {user: this.state.user, myProfile: true} } />
+            <AppNavigator screenProps={ {user: this.state.user, myProfile: true, matched: true} } />
           </View>
         </Provider>
       );
