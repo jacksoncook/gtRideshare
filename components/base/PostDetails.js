@@ -61,10 +61,6 @@ class PostDetails extends React.Component {
   requestContact() {
     const { post, uID } = this.state;
     firebase.database()
-      .ref(`${FIREBASE_ATTRIBUTES.USERS}/${uID}/${FIREBASE_ATTRIBUTES.INTERESTED_POSTS}`)
-      .child(post.postID)
-      .set(true);
-    firebase.database()
       .ref(`${FIREBASE_ATTRIBUTES.POSTS}/${post.postID}/${FIREBASE_ATTRIBUTES.REQUESTS}`)
       .child(uID)
       .set(true);
