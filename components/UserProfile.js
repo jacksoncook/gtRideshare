@@ -129,8 +129,6 @@ class UserProfile extends React.Component {
     updatedUser.postCount = user.postCount;
     updatedUser.rides = user.rides;
     updatedUser.matches = user.matches
-    console.log("asdfasdfasdf");
-    console.log(updatedUser);
     this.props.editUser(updatedUser);
     this.setState({
       user: updatedUser,
