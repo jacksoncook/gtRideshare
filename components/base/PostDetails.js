@@ -5,14 +5,17 @@ import React from 'react';
 import {
   Alert,
   Button,
+  FlatList,
   Modal,
   StyleSheet,
   Text,
+  TouchableHighlight,
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import UserProfile from '../UserProfile';
+import ContactRequest from './ContactRequest';
 
 const styles = StyleSheet.create({
   label: {
@@ -55,6 +58,8 @@ class PostDetails extends React.Component {
     this.showExploringUser = this.showExploringUser.bind(this);
     this.returnToPost = this.returnToPost.bind(this);
     this.removePost = this.removePost.bind(this);
+    this.accept = this.accept.bind(this);
+    this.deny = this.deny.bind(this);
   }
 
   // Request contact with another user through their post
@@ -68,9 +73,9 @@ class PostDetails extends React.Component {
   }
 
   // Get user profile for exploration
-  exploreUserProfile() {
-    const { posterUID } = this.state.post;
-    firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${posterUID}`).on('value', (snapshot) => {
+  exploreUserProfile(uid) {
+    // const { posterUID } = this.state.post;
+    firebase.database().ref(`${FIREBASE_ATTRIBUTES.USERS}/${uid}`).on('value', (snapshot) => {
       this.setState({ userToExplore: snapshot.val() });
       this.showExploringUser();
     }, (error) => {
@@ -102,6 +107,30 @@ class PostDetails extends React.Component {
     });
   }
 
+  // Accept request for contact
+  accept(uid) {
+    const { uID } = this.state;
+    firebase.database()
+      .ref(`${FIREBASE_ATTRIBUTES.USERS}/${uID}/${FIREBASE_ATTRIBUTES.MATCHES}`)
+      .child(uid)
+      .set(true);
+    firebase.database()
+      .ref(`${FIREBASE_ATTRIBUTES.USERS}/${uid}/${FIREBASE_ATTRIBUTES.MATCHES}`)
+      .child(uID)
+      .set(true);
+    this.props.returnToPosts();
+  }
+
+  // Deny request for contact
+  deny(uid) {
+    const { post } = this.state;
+    firebase.database()
+      .ref(`${FIREBASE_ATTRIBUTES.POSTS}/${post.postID}/${FIREBASE_ATTRIBUTES.REQUESTS}`)
+      .child(uid)
+      .set(null);
+    this.props.returnToPosts();
+  }
+
   render() {
     const {
       description,
@@ -115,7 +144,13 @@ class PostDetails extends React.Component {
       requests,
     } = this.state.post;
     const { matches } = this.state;
-    const matched = matches.has(posterUID);
+    let preMatched = matches.has(posterUID);
+    for (const req of requests) {
+      console.log(req);
+      if (!preMatched) {
+        preMatched = matches.has(req);
+      }
+    }
     return (
       <View style={{
         padding: 10,
@@ -131,7 +166,7 @@ class PostDetails extends React.Component {
         >
           <UserProfile
             returnToPosts={this.returnToPosts}
-            screenProps={{ user: this.state.userToExplore, myProfile: false, matched }}
+            screenProps={{ user: this.state.userToExplore, myProfile: false, matched: preMatched }}
             returnToPost={this.returnToPost}
           />
         </Modal>
@@ -214,7 +249,7 @@ class PostDetails extends React.Component {
         {this.state.uID !== posterUID
           ? (
             <Button
-              onPress={this.exploreUserProfile}
+              onPress={_ => this.exploreUserProfile(posterUID)}
               style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -236,6 +271,26 @@ class PostDetails extends React.Component {
               title="Request Contact"
             />
           ) : null}
+        {this.state.uID === posterUID
+          ? (
+            <FlatList
+              data={Array.from(requests)}
+              renderItem={({ item }) => (
+                (matches.has(item))
+                  ? (
+                    <TouchableHighlight onPress={_ => this.exploreUserProfile(item)}>
+                      <ContactRequest matched />
+                    </TouchableHighlight>
+                  )
+                  : (
+                    <TouchableHighlight onPress={_ => this.exploreUserProfile(item)}>
+                      <ContactRequest matched={false} deny={_ => this.deny(item)} accept={_ => this.accept(item)} />
+                    </TouchableHighlight>
+                  )
+              )}
+            />
+          )
+          : null}
         {this.state.uID === posterUID
           ? (
             <Button

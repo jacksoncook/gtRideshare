@@ -100,6 +100,7 @@ class HistoryBoard extends React.Component {
             (item.requests.has(user.uID) || user.uID === item.posterUID) ?
             <TouchableHighlight onPress={ _ => this.showPostDetails(item) }>
               <PostComponent
+                post={item}
                 destination={item.destination}
                 date={item.date}
                 departureTime={item.departureTime}
@@ -107,6 +108,8 @@ class HistoryBoard extends React.Component {
                 postID={item.postID}
                 returnTime={item.returnTime}
                 startingLocation={item.startingLocation}
+                requests={item.requests}
+                posterUID={item.posterUID}
               />
             </TouchableHighlight>
             :
