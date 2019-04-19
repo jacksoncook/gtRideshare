@@ -1,6 +1,16 @@
+Welcome to GTRideshare 1.0.0! GTRideshare lets members of the GT community post their commute information (POSTS) for carpooling purposes. If you are in need of a ride, or are looking for a carpooling buddy, this app is for you! Users can view others’ posts and request a match if they want to carpool. Contact details are then shared to facilitate carpooling. Have fun carpooling!
+
+Features:
+-Navigate and view various POSTS made by users for rides to/from campus and the Atlanta area
+-Design and make POSTS of your choice
+-Request contact of users you want to match with
+-Simple, neat, streamlined UI
+
+Carpool. Drive. Save.
+
 Installation Instructions:
 
-The source can be run on any platform. A phone or tablet with expo app installed works as 
+The source code can be run on any platform. A phone or tablet with expo app installed works as 
 a good supplement.
 
 Setting up server and required libraries:
@@ -11,6 +21,7 @@ Node 10+ is used along with Firebase, Redux and React
 4. Run npm install -S redux react-redux redux-thunk
 5. Run npm install -g firebase
 6. Run npm install -g react-thunk
+
 Note that you mant already have some of these libraries installed
 
 Download and Running Source Code:
