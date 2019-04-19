@@ -11,8 +11,6 @@ Node 10+ is used along with Firebase, Redux and React
 4. Run npm install -S redux react-redux redux-thunk
 5. Run npm install -g firebase
 6. Run npm install -g react-thunk
-7. Run npm install -g redux
-8. Run npm install -g redux-thunk
 Note that you mant already have some of these libraries installed
 
 Download and Running Source Code:
