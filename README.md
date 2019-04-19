@@ -2,8 +2,11 @@ Welcome to GTRideshare 1.0.0! GTRideshare lets members of the GT community post 
 
 Features:
 -Navigate and view various POSTS made by users for rides to/from campus and the Atlanta area
+
 -Design and make POSTS of your choice
+
 -Request contact of users you want to match with
+
 -Simple, neat, streamlined UI
 
 Carpool. Drive. Save.
